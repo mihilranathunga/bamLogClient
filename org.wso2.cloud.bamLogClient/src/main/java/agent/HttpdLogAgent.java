@@ -39,6 +39,8 @@ public class HttpdLogAgent {
     private static final String VERSION = "1.0.0";
     private static final int MAX_LOGS = 1000;
     private static final String SAMPLE_LOG_PATH = System.getProperty("user.dir") + "/resources/access.log";
+    
+    
 
     public static void main(String[] args) throws SocketException, AgentException, MalformedURLException, AuthenticationException, TransportException, StreamDefinitionException, MalformedStreamDefinitionException, DifferentStreamDefinitionAlreadyDefinedException, FileNotFoundException, UnknownHostException {
         System.out.println("Starting BAM HttpLog Agent");
@@ -136,5 +138,8 @@ public class HttpdLogAgent {
             result = def;
         }
         return result;
+    }
+    private static void loadConf(){
+    	
     }
 }

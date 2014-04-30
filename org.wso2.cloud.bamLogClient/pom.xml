@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>org.wso2.cloud.bamLogClient</groupId>
 	<artifactId>org.wso2.cloud.bamLogClient</artifactId>
-	<name>bam-log-client</name>
+	<name>org.wso2.cloud.bamLogClient</name>
 
 	<dependencies>
 
