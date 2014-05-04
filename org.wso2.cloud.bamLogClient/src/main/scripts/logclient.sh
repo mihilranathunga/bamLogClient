@@ -22,7 +22,7 @@
 check_status() {
   # Running ps with some arguments to check if the PID exists
 
-  s="$(ps -ef | grep 'java -jar java -jar bam-thrift-client-for-logs-0.1.jar'| grep -v "grep" | awk '{print$2}')"
+  s="$(ps -ef | grep 'java -jar bam-thrift-client-for-logs-0.1.jar'| grep -v "grep" | awk '{print$2}')"
 
   # If something was returned by the ps command, this function returns the PID
   if [ $s ] ; then

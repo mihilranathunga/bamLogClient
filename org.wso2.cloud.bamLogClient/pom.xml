@@ -127,7 +127,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>agent.HttpdLogAgent</mainClass>
+							<mainClass>logClient.LogClient</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

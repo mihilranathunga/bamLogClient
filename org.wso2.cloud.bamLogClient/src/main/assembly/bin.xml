@@ -24,6 +24,7 @@
             <directory>${project.basedir}</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
+            	<include>*.conf</include>
                 <include>README.*</include>
             </includes>
         </fileSet>

@@ -15,6 +15,8 @@ import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Scanner;
 import java.lang.String;
@@ -50,7 +52,7 @@ public class HttpdLogAgent {
         System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
         Agent agent = new Agent(agentConfiguration);
         String host;
-
+        
         if (getLocalAddress() != null) {
            host = getLocalAddress().getHostAddress();
         } else {
