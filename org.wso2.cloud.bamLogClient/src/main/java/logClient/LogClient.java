@@ -11,6 +11,7 @@ import utils.fileutils.FileManager;
 import configuration.Node;
 import configuration.parser.nginx.NodeBuilder;
 
+import agent.LogClientContext;
 import agent.WatchDir;
 
 public class LogClient {
@@ -52,15 +53,22 @@ public class LogClient {
 	private void getPathList(){
 		for(Map.Entry<String, String> properties: logsNode.getProperties().entrySet()){
 			
-			 Path p = Paths.get(properties.getValue());
-
-			 // This list has names of the files with their path
-	            WatchDir.absFileList.add(p.toString());
+			 Path fullLogPath = null;
+            try {
+            	fullLogPath = Paths.get(properties.getValue());
+            } catch (Exception e) {
+	            System.out.println("LogClient - ERROR : "+e.getMessage());
+	            e.printStackTrace();
+            }
+            
+            System.out.println("putting :"+fullLogPath.toString());
+            
+            WatchDir.readerContext.put(fullLogPath.toString(),new LogClientContext(fullLogPath, properties.getKey(), 0));
 	         // This list only contains the file locations (parent directories)
-	            WatchDir.regPaths.add(p.getParent());
+	            WatchDir.regPaths.add(fullLogPath.getParent());
 	         // This list contains filenames with their absolutes paths to the file key which is used to identify
 	         // the given path
-	            WatchDir.fileKeys.put(p.toString(), properties.getKey());
+	            WatchDir.fileKeys.put(fullLogPath.toString(), properties.getKey());
 		}
 	}
 

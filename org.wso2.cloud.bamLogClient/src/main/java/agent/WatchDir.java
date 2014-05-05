@@ -1,12 +1,23 @@
 package agent;
 
-import java.nio.file.*;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
-import static java.nio.file.StandardWatchEventKinds.*;
-import static java.nio.file.LinkOption.*;
-import java.nio.file.attribute.*;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Example to watch a directory (or tree) for changes to files.
@@ -17,18 +28,9 @@ public class WatchDir {
 	private final WatchService watcher;
 	private final Map<WatchKey, Path> keys;
 	private boolean trace = false;
-	/************************************/
-	RandomAccessFile raf = null;
-	File file = null;
 
-	private long fileLength = 0;
-	private long newFileLength;
-
-	public static ArrayList<String> absFileList = new ArrayList<String>();
 	public static ArrayList<Path> regPaths = new ArrayList<Path>();
-	public static Hashtable<String, String> fileKeys = new Hashtable<String, String>();
-
-	/**************************************/
+	public static Hashtable<String, LogClientContext> readerContext = new Hashtable<String,LogClientContext>();
 
 	@SuppressWarnings("unchecked")
 	static <T> WatchEvent<T> cast(WatchEvent<?> event) {
@@ -103,15 +105,19 @@ public class WatchDir {
 				WatchEvent<Path> ev = cast(event);
 				Path name = ev.context();
 				Path child = dir.resolve(name);
+				String fullFilePath = child.toString();
 
 				// System.out.format("%s : %s\n", name, child);
 
 				// print out event
 				// System.out.format("%s: %s\n", event.kind().name(), child);
 				
-				if (absFileList.contains(child.toString())) {
-
-					readFile(child);
+				if (readerContext.containsKey(fullFilePath)) {
+					//System.out.println("before getting context"+readerContext.toString());
+					LogClientContext context = readerContext.get(fullFilePath);
+					readerContext.remove(fullFilePath);
+					//System.out.println("after removing context"+readerContext.toString());
+					readFile(fullFilePath,context);
 				}
 			}
 
@@ -128,25 +134,73 @@ public class WatchDir {
 		}
 	}
 
-	private void readFile(Path child) {
+	private void readFile(String fullPath, LogClientContext context) {
+		
+		File file = null;
 
 		try {
+			
 			if (file == null) {
-				System.out.println();
-
-				file = new File(child.toString());
-				raf = new RandomAccessFile(file, "r");
+				
+				file = new File(fullPath);
+				//raf = new RandomAccessFile(file, "r");
+				
 			}
+			
+			BufferedReader br = new BufferedReader(new FileReader(file));
 
-			newFileLength = file.length();
+			//newFileLength = file.length();
+			
+			//raf.getChannel().position();
+			//BufferedReader br = new BufferedReader(new InputStreamReader(Channels.newInputStream(raf.getChannel())));
 
-			byte arr[] = new byte[(int) (newFileLength - fileLength)];
+			//byte arr[] = new byte[(int) (newFileLength - fileLength)];
 
-			raf.read(arr);
-			String decoded = new String(arr, "utf-8");
-			System.out.println("BAM LOG CLIENT : "+fileKeys.get(child.toString())+" - "+decoded);
+			//raf.read(arr);
+			//String decoded = new String(arr, "utf-8");
+			
+			/*try {
+	            if(!decoded.equals(null) |!decoded.equals("")){
+	            	String lines[] = decoded.split("\r?\n|\r");
+	            	for(String line: lines){
+	            		if(!line.equals(null)| !line.equals("")){
+	            			System.out.println("BAM LOG CLIENT : "+fileKeys.get(child.toString())+" - "+decoded);
+	            		}
+	            	}
+	            
+	            }
+            } catch (Exception e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+            }
+			fileLength = newFileLength;*/
+			
+			br.skip(context.getCurrentFilePointer());
+			
+			String line;
 
-			fileLength = newFileLength;
+			while (true) {
+				
+				if((line = br.readLine()) == null){
+					
+					//System.out.println("before adding context"+readerContext.toString());
+					System.out.println("Previous Point: "+context.getCurrentFilePointer()+" , Current:"+file.length());
+					context.setCurrentFilePointer(file.length());
+					
+					try {
+	                    readerContext.put(context.getAbsLogPath(), context);
+                    } catch (Exception e) {
+	                    // TODO Auto-generated catch block
+	                    System.out.println(e.getMessage());
+                    }
+					//System.out.println("after adding context"+readerContext.toString()+","+context.getAbsLogPath()+" ,"+context.toString());
+					break;
+				}else{
+					System.out.println("BAM LOG CLIENT : "+context.getFileKey()+" - "+line);
+				}
+
+			    
+			}
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
