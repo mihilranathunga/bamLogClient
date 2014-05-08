@@ -45,7 +45,6 @@ public class LogClient {
 	public static Node rootNode;
 	public static Node logsNode;
 	public static Node bamNode;
-	public static Node streamNode;
 	
 	private static final Log log = LogFactory.getLog(LogClient.class);
 
@@ -79,10 +78,8 @@ public class LogClient {
 			rootNode = NodeBuilder.buildNode(configuration, FileManager.readFile(Constants.LOGCLIENT_CONF_PATH));
 			logsNode = rootNode.findChildNodeByName("logs");
 			bamNode  = rootNode.findChildNodeByName("bam_configuration");
-			streamNode = rootNode.findChildNodeByName("stream_definitions");
 			log.debug(logsNode);
 			log.debug(bamNode);
-			log.debug(streamNode);
 		} catch (IOException e) {
 			log.error("Error processing configuration file - "+e.getMessage(), e);
 			log.fatal("Log client is Exiting..");
@@ -91,13 +88,12 @@ public class LogClient {
 	}
 
 	private void getPathList() {
-		for (Node server : logsNode.getChildNodes()) {
+		for (Node file : logsNode.getChildNodes()) {
 
-			Path fullLogPath = null;
 			LogClientContext context = null;
 			
 			try {
-	            context = new LogClientContext(server);
+	            context = new LogClientContext(file);
             } catch (Exception e) {
             	log.error("Error creating context for the given log file - "+e.getMessage(), e);
             	continue;

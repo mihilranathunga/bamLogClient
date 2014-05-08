@@ -147,7 +147,7 @@ public class LogClientContext {
 	 * @return the fileKey
 	 */
 	public String getFileKey() {
-		return getFileKey();
+		return fileKey;
 	}
 
 	/**

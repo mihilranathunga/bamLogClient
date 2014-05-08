@@ -58,7 +58,7 @@ public class BamDataSender {
          Agent agent = new Agent(agentConfiguration);
          
          //create data publisher
-
+         log.debug("Bam DataPublisher Creation: "+bamNode.getProperty("data_reciever_url")+" , "+bamNode.getProperty("data_reciever_username")+" , "+bamNode.getProperty("data_reciever_password")+" , "+agent);
         dataPublisher = new DataPublisher(bamNode.getProperty("data_reciever_url"), bamNode.getProperty("data_reciever_username"), bamNode.getProperty("data_reciever_password"), agent);
     }
     

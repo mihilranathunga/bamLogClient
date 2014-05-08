@@ -222,10 +222,10 @@ public class FileTracker {
 	public static LogClientContext getContextFromList(String absLogFilePath){
 		LogClientContext context = null;
         try {
-	        log.debug("Before remove context :" +readerContext.toString());
+	        log.debug("Before getting context :" +readerContext.toString());
 	        context = readerContext.get(absLogFilePath);
 	        readerContext.remove(absLogFilePath);
-	        log.debug("After remove context :" +readerContext.toString());
+	        log.debug("After getting context :" +readerContext.toString());
         } catch (Exception e) {
 	        log.error("Exception occured getting context object from context list - "+e.getMessage(), e);
         }
@@ -236,7 +236,7 @@ public class FileTracker {
 		try {
 	        log.debug("Before adding context :" +readerContext.toString());
 	        readerContext.put(absLogFilePath, context);
-	        log.debug("After remove context :" +readerContext.toString());
+	        log.debug("After adding context :" +readerContext.toString());
 	        status = true;
         } catch (Exception e) {
         	log.error("Exception occured putting context object to context list - "+e.getMessage(), e);
