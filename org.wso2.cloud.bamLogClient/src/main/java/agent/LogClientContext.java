@@ -1,9 +1,31 @@
 /**
- * 
+ * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * <p/>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package agent;
 
+import java.io.File;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Enumeration;
+
+import configuration.Node;
 
 /**
  *
@@ -16,33 +38,27 @@ public class LogClientContext {
 	private String fileName;
 	private String fileLocation;
 	private String fileKey;
+	private String hostAddress;
 	private long currentFilePointer;
+	
+	private String streamVersion;
 
 	/**
-	 * @param fullLogPath
-	 * @param fileKey
-	 * @param currentFilePointer
+	 * 
+	 * @param Node node
 	 */
-	public LogClientContext(Path fullLogPath, String fileKey, long currentFilePointer) {
-		super();
-		this.fullLogPath = fullLogPath;
-		this.fileKey = fileKey;
-		this.currentFilePointer = currentFilePointer;
-		setupVariables(fullLogPath);
+    public LogClientContext(Node node) throws Exception{
+	    super();
 
-	}
-
-	/**
-	 * @param fullLogPath
-	 * @param fileKey
-	 */
-	public LogClientContext(Path fullLogPath, String fileKey) {
-		super();
-		this.fullLogPath = fullLogPath;
-		this.fileKey = fileKey;
-		this.currentFilePointer = 0;
+	    this.fullLogPath = Paths.get(node.getProperty("path"));
+	    this.fileKey = node.getName();
+	    this.streamVersion = node.getProperty("stream_version");
+	    this.currentFilePointer = (new File(this.fullLogPath.toString())).length();
 		setupVariables(fullLogPath);
-	}
+		this.hostAddress = calculateHostAddress();
+		
+    }
+
 	/**
 	 * Initialize other path variables
 	 * @param fullLogPath
@@ -64,6 +80,33 @@ public class LogClientContext {
 			return false;
 		}
 	}
+	
+	public String  calculateHostAddress() throws SocketException, UnknownHostException{
+		String hostIp;
+		
+		 if (getLocalAddress() != null) {
+			 hostIp = getLocalAddress().getHostAddress();
+	       } else {
+	    	   hostIp = "localhost"; // Defaults to localhost
+	       }
+		 return hostIp;
+	}
+	
+    private static InetAddress getLocalAddress() throws SocketException, UnknownHostException {
+        Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
+        while (ifaces.hasMoreElements()) {
+            NetworkInterface iface = ifaces.nextElement();
+            Enumeration<InetAddress> addresses = iface.getInetAddresses();
+
+            while (addresses.hasMoreElements()) {
+                InetAddress addr = addresses.nextElement();
+                if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
+                    return addr;
+                }
+            }
+        }
+        return InetAddress.getLocalHost();
+    }
 
 	/**
 	 * @return the fullLogPath
@@ -104,7 +147,14 @@ public class LogClientContext {
 	 * @return the fileKey
 	 */
 	public String getFileKey() {
-		return fileKey;
+		return getFileKey();
+	}
+
+	/**
+	 * @return the hostAddress
+	 */
+	public String getHostAddress() {
+		return hostAddress;
 	}
 
 	/**
@@ -112,6 +162,22 @@ public class LogClientContext {
 	 */
 	public long getCurrentFilePointer() {
 		return currentFilePointer;
+	}
+
+	/**
+	 * @return the streamVersion
+	 */
+	public String getStreamVersion() {
+		return streamVersion;
+	}
+
+	/**
+	 * Set version of the stream
+	 * 
+	 * @param streamVersion the streamVersion to set
+	 */
+	public void setStreamVersion(String streamVersion) {
+		this.streamVersion = streamVersion;
 	}
 
 	/**
@@ -124,11 +190,10 @@ public class LogClientContext {
 	}
 
 	/**
-	 * @param fileKey
-	 *            the fileKey to set
+	 * @param hostAddress the hostAddress to set
 	 */
-	public void setFileKey(String fileKey) {
-		this.fileKey = fileKey;
+	public void setHostAddress(String hostAddress) {
+		this.hostAddress = hostAddress;
 	}
 
 	/**
@@ -138,12 +203,13 @@ public class LogClientContext {
 	public void setCurrentFilePointer(long currentFilePointer) {
 		this.currentFilePointer = currentFilePointer;
 	}
-	
+
 	/**
 	 * 
 	 */
 	
-	public String toString(){
+	@Override
+    public String toString(){
 		
 		return fullLogPath.toString()+" , "+fileDirectory.toString()+" , "+absLogPath+" , "+
 		fileName+" , "+fileLocation+" , "+fileKey+" , : "+String.valueOf(currentFilePointer);	
