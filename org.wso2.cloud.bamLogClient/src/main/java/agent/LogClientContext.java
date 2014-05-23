@@ -39,6 +39,7 @@ public class LogClientContext {
 	private String fileLocation;
 	private String fileKey;
 	private String hostAddress;
+	private String hostName;
 	private long currentFilePointer;
 	
 	private String streamVersion;
@@ -204,15 +205,16 @@ public class LogClientContext {
 		this.currentFilePointer = currentFilePointer;
 	}
 
-	/**
-	 * 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
 	 */
-	
-	@Override
-    public String toString(){
-		
-		return fullLogPath.toString()+" , "+fileDirectory.toString()+" , "+absLogPath+" , "+
-		fileName+" , "+fileLocation+" , "+fileKey+" , : "+String.valueOf(currentFilePointer);	
-	}
+    @Override
+    public String toString() {
+	    return "LogClientContext [absLogPath=" + absLogPath + ", fileName=" + fileName +
+	           ", fileLocation=" + fileLocation + ", fileKey=" + fileKey + ", hostAddress=" +
+	           hostAddress + ", currentFilePointer=" + currentFilePointer + ", streamVersion=" +
+	           streamVersion + "]";
+    }
+
 
 }

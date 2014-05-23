@@ -27,6 +27,8 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import logClient.LogClient;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.databridge.agent.thrift.Agent;
@@ -65,13 +67,14 @@ public class BamDataSender {
     @SuppressWarnings("deprecation")
     public static void createStreams(LogClientContext context) throws AgentException, StreamDefinitionException, MalformedStreamDefinitionException, DifferentStreamDefinitionAlreadyDefinedException, FileNotFoundException, SocketException, UnknownHostException{
     	
+    	log.debug("creating stream for context :"+context.toString());
     	String hostIP = context.getHostAddress();
     	String fileKey = context.getFileKey();
     	String version = context.getStreamVersion();
     	String streamId;
     	String streamName;
     	
-    	streamName = fileKey+".log."+hostIP;
+    	streamName = "logs_"+hostIP;
          try {
              streamId = dataPublisher.findStream(streamName, version);
              log.info("Stream already defined");
@@ -79,14 +82,14 @@ public class BamDataSender {
              streamId = dataPublisher.defineStream("{" +
                      "  'name':'" + streamName+ "'," +
                      "  'version':'" + version + "'," +
-                     "  'description': 'logs of "+fileKey+"'," +
-                     "	'nickname':	'logs'" +
+                     "  'description': 'logs of "+hostIP+"'," +
+                     "	'nickname':	'logs'," +
                      "  'metaData':[" +
                      "          {'name':'hostType','type':'STRING'}" +
                      "  ]," +
                      "  'payloadData':[" +
-                     "			{'name':'file.key','type':'STRING'},"+	
-                     "			{'name':'host.address','type':'STRING'},"+		
+                     "			{'name':'filekey','type':'STRING'},"+	
+                     "			{'name':'host_address','type':'STRING'},"+		
                      "			{'name':'timestamp','type':'STRING'}," +
                      "          {'name':'log','type':'STRING'}" +	
                      "  ]" +

@@ -202,8 +202,7 @@ public class FileTracker {
 
 					BamDataSender.publishLogEvents(context,
 					                               line,
-					                               new SimpleDateFormat(
-					                                                    "EEE, d MMM yyyy HH:mm:ss,S Z").format(new Date()));
+					                               new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss.SZ").format(new Date()));
 				}
 
 			}

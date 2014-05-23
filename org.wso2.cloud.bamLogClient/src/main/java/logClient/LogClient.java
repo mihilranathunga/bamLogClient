@@ -45,6 +45,7 @@ public class LogClient {
 	public static Node rootNode;
 	public static Node logsNode;
 	public static Node bamNode;
+	public static String hostName;
 	
 	private static final Log log = LogFactory.getLog(LogClient.class);
 
@@ -78,6 +79,7 @@ public class LogClient {
 			rootNode = NodeBuilder.buildNode(configuration, FileManager.readFile(Constants.LOGCLIENT_CONF_PATH));
 			logsNode = rootNode.findChildNodeByName("logs");
 			bamNode  = rootNode.findChildNodeByName("bam_configuration");
+			hostName = logsNode.getProperty("host_name");
 			log.debug(logsNode);
 			log.debug(bamNode);
 		} catch (IOException e) {
@@ -98,7 +100,7 @@ public class LogClient {
             	log.error("Error creating context for the given log file - "+e.getMessage(), e);
             	continue;
             }
-	
+
 		    // this table has context details of each log file with full file path as the key
 			FileTracker.putContextToList(context.getAbsLogPath(), context);
 			// This list only contains the file locations (parent directories)
