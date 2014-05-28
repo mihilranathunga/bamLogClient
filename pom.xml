@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.wso2.cloud</groupId>
   <artifactId>bam-log-client</artifactId>
-  <version>0.1</version>
+  <version>1.0</version>
   <packaging>pom</packaging>
   <name>bam-log-client</name>
   <description>bam-log-client</description>

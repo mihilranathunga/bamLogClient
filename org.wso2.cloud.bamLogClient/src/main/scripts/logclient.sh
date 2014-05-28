@@ -14,7 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 # ----------------------------------------------------------------------------
-# init script for WSO2 Cloud Heartbeat Monitor
+# init script for WSO2 Bam Log Client
 
 
 # Check the application status
@@ -22,7 +22,7 @@
 check_status() {
   # Running ps with some arguments to check if the PID exists
 
-  s="$(ps -ef | grep 'java -jar bam-thrift-client-for-logs-0.1.jar'| grep -v "grep" | awk '{print$2}')"
+  s="$(ps -ef | grep 'java -jar bam-thrift-client-for-logs-1.0.jar'| grep -v "grep" | awk '{print$2}')"
 
   # If something was returned by the ps command, this function returns the PID
   if [ $s ] ; then
@@ -49,7 +49,7 @@ start() {
   # If the application isn't running, starts it
   echo -n "BAM logging THRIFT client: "
 
-  java -jar bam-thrift-client-for-logs-0.1.jar &
+  java -jar bam-thrift-client-for-logs-1.0.jar &
   echo "Started"
 }
 
